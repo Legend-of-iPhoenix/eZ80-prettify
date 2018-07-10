@@ -52,8 +52,8 @@
     // actual prettifying function
     function prettify() { // all of this is just my personal preference on how I like my code to look. It is liable to change at any time :P
       var code = document.querySelector("#code_input").value;
-      var original_code = code.split('\n'); // we'll use this to calculate changes.
       code = code.replace(LABEL_COMMENT_REGEX, '$1\n$2');
+      var original_code = code.split('\n'); // we'll use this to calculate changes.
       var code_lines = code.split('\n').map(line => line.match(/^\s*(.*)/)[1]); // strip existing indentation.
       var indent_level = 0;
       var changes = 0;
