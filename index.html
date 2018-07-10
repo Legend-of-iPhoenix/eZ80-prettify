@@ -1,0 +1,106 @@
+<!--
+  This is free and unencumbered software released into the public domain.
+
+  Anyone is free to copy, modify, publish, use, compile, sell, or
+  distribute this software, either in source code form or as a compiled
+  binary, for any purpose, commercial or non-commercial, and by any
+  means.
+
+  In jurisdictions that recognize copyright laws, the author or authors
+  of this software dedicate any and all copyright interest in the
+  software to the public domain. We make this dedication for the benefit
+  of the public at large and to the detriment of our heirs and
+  successors. We intend this dedication to be an overt act of
+  relinquishment in perpetuity of all present and future rights to this
+  software under copyright law.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
+
+  For more information, please refer to <http://unlicense.org/>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>eZ80-pretty</title>
+  <script>
+    const INCREASE_INDENT = [ // these things increase the indent level (they are partial regexes)
+      'push',
+      '\\.list' // .list is the start-of-code-listing compiler directive, the code should be indented. Somewhat of a hack, but not really.
+    ];
+    const DECREASE_INDENT = [  // these things decrease the indent level (also partial regexes)
+      'pop'
+    ];
+    const NO_INDENT = [ // Things where the current indent level is ignored. (more partial regexes)
+      '\\.?\\w+:', // labels, for jumping
+      ';.*' // comments that are on the start of a line.
+    ];
+
+    const USE_TABS = false;
+    const SPACES_PER_INDENTATION_LEVEL = 2; // only has an affect if USE_TABS is false.
+
+    const COMMENT_REGEX = /^([^;]+?)\s*(;.*)/; // this is used to match comments NOT on the start of lines, so we can format them specifically.
+
+    // actual prettifying function
+    function prettify() { // all of this is just my personal preference on how I like my code to look. It is liable to change at any time :P
+      var code = document.querySelector("#code_input").value;
+      var original_code = code.split('\n'); // we'll use this to calculate changes.
+      var code_lines = code.split('\n').map(line => line.match(/^\s*(.*)/)[1]); // strip existing indentation.
+      var indent_level = 0;
+      var changes = 0;
+      document.querySelector("#code_input").value = code_lines.map((line, index) => { // we are defining a mapping from the old line of code over to the new, formatted line of code.
+        var indented_line = line; // we assume zero indentation.
+        if (!NO_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // first, we must check if the code should be indented.
+          if (DECREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // if we decrease the indent, we also decrease the indent of the line where it is found.
+            indent_level--; // decrease current indent level
+          }
+          if (USE_TABS) { // if we are using tabs 
+            indented_line = '\t'.repeat(indent_level) + line // use tabs
+          } else {
+            indented_line = ' '.repeat(indent_level * SPACES_PER_INDENTATION_LEVEL) + line; // otherwise, use spaces.
+          }
+          if (INCREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) {
+            indent_level++; // increase the current indent level
+          }
+        }
+
+        var comment_matches = indented_line.match(COMMENT_REGEX)
+        if (comment_matches) { // if the line matches our comment regex (i.e. it has a comment not on the start of the line)
+          indented_line = comment_matches[1] + (USE_TABS ? '\t' : ' '.repeat(SPACES_PER_INDENTATION_LEVEL)) + comment_matches[2] // place comments not on lines one indent-level away from the command. Change from spacts to tabs if necessary
+        }
+
+        if (original_code[index] != indented_line) {
+          changes++;
+        }
+
+        return indented_line
+      }).join('\n');
+      if (changes) {
+        document.querySelector('#done_message').innerText = "Code has been beautified, with " + changes + " lines changed.";
+      } else {
+        document.querySelector('#done_message').innerText = "Code did not change.";
+      }
+      setTimeout(function() {
+        document.querySelector('#done_message').innerText = "";
+      }, 10000); // after 10 seconds, get rid of the done message.
+    }
+  </script>
+</head>
+<body>
+  <h1>eZ80-prettify</h1>
+  <p> This is a tool that prettifies your eZ80 Assembly code. </p>
+  <p> Paste your code into the text area, press the button, and you are done! </p>
+  <button onclick="prettify()">Prettify eZ80 Assembly</button> <span id="done_message"></span>
+  <br />
+  <textarea id="code_input" style="resize: both; font-family: monospace; width: 100%; height: 25vh;"></textarea>
+  <p> This is a personal tool, so it formats using my personal preferences. </p>
+  <p> All of the code is in the public domain, so feel free to fork the project <a href="https://github.com/Legend-of-iPhoenix/eZ80-prettify/">on GitHub</a> and customize it with your own preferences. </p>
+  <p> Created by <a href="https://legend-of-iphoenix.github.io/">_iPhoenix_</a>.</p>
+</body>
+</html>
