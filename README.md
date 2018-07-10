@@ -22,6 +22,8 @@ In the file named `index.html`, there is a relatively small script tag. Towards 
     - This is a boolean value (`true` or `false`) that should be set to `true` if tabs are preferred over spaces.
  - `SPACES_PER_INDENTATION_LEVEL`:
     - This is the number of spaces used per indent level. It only has an affect on the indentation if `USE_TABS` is `false`.
+ - `LABEL_COMMENT_REGEX`:
+    - This is a RegEx, **NOT** stored as a string, that matches comments on the same line as a label. It's used to put them on new lines. It is a full RegEx, and must include the `^` start-of-line modifier and/or any wanted flags.
  - `COMMENT_REGEX`:
     - This is a RegEx, **NOT** stored as a string, that matches comments not on the beginning of a line. It is a full RegEx, and must include the `^` start-of-line modifier and/or any wanted flags.
 
