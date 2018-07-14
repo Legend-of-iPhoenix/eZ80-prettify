@@ -76,7 +76,10 @@
 
         var comment_matches = indented_line.match(COMMENT_REGEX)
         if (comment_matches) { // if the line matches our comment regex (i.e. it has a comment not on the start of the line)
-          indented_line = comment_matches[1] + (USE_TABS ? '\t' : ' '.repeat(SPACES_PER_INDENTATION_LEVEL)) + comment_matches[2] // place comments not on lines one indent-level away from the command. Change from spacts to tabs if necessary
+          if (!comment_matches[2].match(/^;\S/)) {
+            comment_matches[2] = '; ' + comment_matches[2].substring(1)
+          }
+          indented_line = comment_matches[1] + ' ' + comment_matches[2] // place comments not on lines one space away from the command.
         }
 
         if (original_code[index] != indented_line) {
