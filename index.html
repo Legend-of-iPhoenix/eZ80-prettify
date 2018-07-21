@@ -76,19 +76,17 @@
       var changes = 0;
       document.querySelector("#code_input").value = code_lines.map((line, index) => { // we are defining a mapping from the old line of code over to the new, formatted line of code.
         var indented_line = line; // we assume zero indentation.
-        if (!line.match(NO_CHANGE_REGEX)) {
-          if (!NO_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // first, we must check if the code should be indented.
-            if (DECREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // if we decrease the indent, we also decrease the indent of the line where it is found.
-              indent_level--; // decrease current indent level
-            }
-            if (USE_TABS) { // if we are using tabs 
-              indented_line = '\t'.repeat(indent_level) + line // use tabs
-            } else {
-              indented_line = ' '.repeat(indent_level * SPACES_PER_INDENTATION_LEVEL) + line; // otherwise, use spaces.
-            }
-            if (INCREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) {
-              indent_level++; // increase the current indent level
-            }
+        if (!NO_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // first, we must check if the code should be indented.
+          if (!line.match(NO_CHANGE_REGEX) && DECREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // if we decrease the indent, we also decrease the indent of the line where it is found.
+            indent_level--; // decrease current indent level
+          }
+          if (USE_TABS) { // if we are using tabs 
+            indented_line = '\t'.repeat(indent_level) + line // use tabs
+          } else {
+            indented_line = ' '.repeat(indent_level * SPACES_PER_INDENTATION_LEVEL) + line; // otherwise, use spaces.
+          }
+          if (!line.match(NO_CHANGE_REGEX) && INCREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) {
+            indent_level++; // increase the current indent level
           }
         }
 
