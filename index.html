@@ -27,9 +27,19 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>eZ80-pretty</title>
-  <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-109579764-3"></script> <script>window.dataLayer=window.dataLayer || []; function gtag(){dataLayer.push(arguments)}gtag("js", new Date), gtag("config", "UA-109579764-3")</script>
+  <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-109579764-3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments)
+    }
+    gtag("js", new Date), gtag("config", "UA-109579764-3")
+  </script>
   <script>
     const INCREASE_INDENT = [ // these things increase the indent level (they are partial regexes)
       'push',
@@ -37,7 +47,7 @@
       '.*; (?:eZ80-)?prettif(?:y|ier): ?indent[_-]level\\+\\+',
       '.*; (?:eZ80-)?prettif(?:y|ier)-increase-indent'
     ];
-    const DECREASE_INDENT = [  // these things decrease the indent level (also partial regexes)
+    const DECREASE_INDENT = [ // these things decrease the indent level (also partial regexes)
       'pop',
       '.*; ?(?:eZ80-)?prettif(?:y|ier): ?indent[_-]level--',
       '.*; (?:eZ80-)?prettif(?:y|ier)-decrease-indent'
@@ -54,6 +64,8 @@
 
     const COMMENT_REGEX = /^([^;]+?)\s*(;.*)/; // this is used to match comments NOT on the start of lines, so we can format them specifically.
 
+    const NO_CHANGE_REGEX = /; (?:eZ80-)?prettif(?:y|ier)-no-indent-change/i
+
     // actual prettifying function
     function prettify() { // all of this is just my personal preference on how I like my code to look. It is liable to change at any time :P
       var code = document.querySelector("#code_input").value;
@@ -64,17 +76,19 @@
       var changes = 0;
       document.querySelector("#code_input").value = code_lines.map((line, index) => { // we are defining a mapping from the old line of code over to the new, formatted line of code.
         var indented_line = line; // we assume zero indentation.
-        if (!NO_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // first, we must check if the code should be indented.
-          if (DECREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // if we decrease the indent, we also decrease the indent of the line where it is found.
-            indent_level--; // decrease current indent level
-          }
-          if (USE_TABS) { // if we are using tabs 
-            indented_line = '\t'.repeat(indent_level) + line // use tabs
-          } else {
-            indented_line = ' '.repeat(indent_level * SPACES_PER_INDENTATION_LEVEL) + line; // otherwise, use spaces.
-          }
-          if (INCREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) {
-            indent_level++; // increase the current indent level
+        if (!line.match(NO_CHANGE_REGEX)) {
+          if (!NO_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // first, we must check if the code should be indented.
+            if (DECREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) { // if we decrease the indent, we also decrease the indent of the line where it is found.
+              indent_level--; // decrease current indent level
+            }
+            if (USE_TABS) { // if we are using tabs 
+              indented_line = '\t'.repeat(indent_level) + line // use tabs
+            } else {
+              indented_line = ' '.repeat(indent_level * SPACES_PER_INDENTATION_LEVEL) + line; // otherwise, use spaces.
+            }
+            if (INCREASE_INDENT.some(regex => line.match(new RegExp('^' + regex, 'i')))) {
+              indent_level++; // increase the current indent level
+            }
           }
         }
 
@@ -95,12 +109,13 @@
       } else {
         document.querySelector('#done_message').innerText = "Code did not change.";
       }
-      setTimeout(function() {
+      setTimeout(function () {
         document.querySelector('#done_message').innerText = "";
       }, 5000); // after 5 seconds, get rid of the done message.
     }
   </script>
 </head>
+
 <body>
   <h1>eZ80-prettify</h1>
   <p> This is a tool that prettifies your eZ80 Assembly code. </p>
@@ -112,4 +127,5 @@
   <p> All of the code is in the public domain, so feel free to fork the project <a href="https://github.com/Legend-of-iPhoenix/eZ80-prettify/">on GitHub</a> and customize it with your own preferences. </p>
   <p> Created by <a href="https://legend-of-iphoenix.github.io/">_iPhoenix_</a>.</p>
 </body>
+
 </html>
