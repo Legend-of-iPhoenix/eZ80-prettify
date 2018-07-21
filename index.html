@@ -34,11 +34,13 @@
     const INCREASE_INDENT = [ // these things increase the indent level (they are partial regexes)
       'push',
       '\\.list', // .list is the start-of-code-listing compiler directive, the code should be indented. Somewhat of a hack, but not really.
-      '.*; (?:eZ80-)?prettif(?:y|ier): ?indent[_-]level\\+\\+'
+      '.*; (?:eZ80-)?prettif(?:y|ier): ?indent[_-]level\\+\\+',
+      '.*; (?:eZ80-)?prettif(?:y|ier)-increase-indent'
     ];
     const DECREASE_INDENT = [  // these things decrease the indent level (also partial regexes)
       'pop',
-      '.*; ?(?:eZ80-)?prettif(?:y|ier): ?indent[_-]level--'
+      '.*; ?(?:eZ80-)?prettif(?:y|ier): ?indent[_-]level--',
+      '.*; (?:eZ80-)?prettif(?:y|ier)-decrease-indent'
     ];
     const NO_INDENT = [ // Things where the current indent level is ignored. (more partial regexes)
       '\\.?\\w+:', // labels, for jumping
