@@ -54,7 +54,8 @@
     ];
     const NO_INDENT = [ // Things where the current indent level is ignored. (more partial regexes)
       '\\.?\\w+:', // labels, for jumping
-      ';.*' // comments that are on the start of a line.
+      ';.*', // comments that are on the start of a line.
+      '\\w+\\s+\\.?equ' // equates
     ];
 
     const USE_TABS = false;
